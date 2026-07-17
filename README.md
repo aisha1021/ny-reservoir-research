@@ -383,7 +383,7 @@ Using a single cloud-free Sentinel-2 image slightly improved Random Forest perfo
 | Combined Hyperspectral     | XGBoost           |     0.184 |
 | Single-Scene Sentinel HARV | Random Forest     |     0.223 |
 | Single-Scene Sentinel BART | Random Forest     |     0.107 |
-
+---
 
 # Method 6 — Expanded Sentinel-2 Features + Canopy Height Model
 
@@ -400,23 +400,13 @@ Changes from previous Sentinel-2 baseline:
   - canopy_height_mean
   - canopy_height_stdDev
 
-Models evaluated:
-
-- Linear Regression (LR)
-- Random Forest (RF)
-- Tuned Random Forest (RF tuned)
-- XGBoost (XGB)
-- Tuned XGBoost (XGB tuned)
-- Support Vector Regression (SVR)
-- HistGradient Boosting (HGB)
-
-Cross-validation was performed using 5-fold K-fold CV.
+Cross-validation was performed using 5-fold K-fold CV on training set.
 
 ---
 
-# A. Expanded Features Without Canopy Height
+## A. Expanded Features Without Canopy Height
 
-## HARV → HARV
+### HARV → HARV
 
 Feature set:
 - 22 uncorrelated Sentinel-2 features
@@ -431,7 +421,7 @@ Feature set:
 | SVR | -0.009 | 14.35 | - |
 | HistGradient Boosting | 0.120 | 15.76 | - |
 
-### Summary
+#### Summary
 
 Adding back standard deviation and texture features improved XGBoost performance compared to the previous Sentinel-2 baseline.
 
@@ -441,7 +431,7 @@ Adding back standard deviation and texture features improved XGBoost performance
 
 ---
 
-## BART → BART
+### BART → BART
 
 Feature set:
 - 21 uncorrelated Sentinel-2 features
@@ -456,7 +446,7 @@ Feature set:
 | SVR | -0.149 | 16.68 | - |
 | HistGradient Boosting | 0.096 | 15.95 | - |
 
-### Summary
+#### Summary
 
 BART models showed similar performance to previous Sentinel-2 experiments.
 
@@ -465,9 +455,9 @@ BART models showed similar performance to previous Sentinel-2 experiments.
 
 ---
 
-# B. Expanded Features Including Canopy Height
+## B. Expanded Features Including Canopy Height
 
-## HARV → HARV
+### HARV → HARV
 
 Feature set:
 - 25 uncorrelated features
@@ -485,7 +475,7 @@ Feature set:
 | SVR | -0.009 | 14.35 | - |
 | HistGradient Boosting | 0.120 | 15.76 | - |
 
-### Summary
+#### Summary
 
 Adding canopy height improved HARV prediction performance.
 
@@ -499,7 +489,7 @@ This suggests canopy structure provides additional ecological information not ca
 
 ---
 
-## BART → BART
+### BART → BART
 
 Feature set:
 - 23 uncorrelated features
@@ -517,7 +507,7 @@ Feature set:
 | SVR | -0.149 | 16.68 | - |
 | HistGradient Boosting | 0.195 | 14.61 | - |
 
-### Summary
+#### Summary
 
 Canopy height substantially improved BART XGBoost performance.
 
@@ -531,7 +521,7 @@ This indicates forest structural information may be important for predicting ECM
 
 ---
 
-# Method 6 Overall Summary
+## Method 6 Overall Summary
 
 | Dataset | Best Model | Best Test R² | MAE |
 |---|---|---:|---:|
@@ -542,7 +532,7 @@ This indicates forest structural information may be important for predicting ECM
 
 ---
 
-# Interpretation
+## Interpretation
 
 Adding canopy height improved within-site ECM prediction, particularly for XGBoost models.
 
