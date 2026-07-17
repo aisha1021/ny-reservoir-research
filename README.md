@@ -25,7 +25,7 @@ Model performance is evaluated using:
 | Method 3 | Replace Sentinel-2 with NEON hyperspectral imagery | Completed |
 | Method 4 | Expand field datasets (2015–2023)                  | Completed |
 | Method 5 | Single cloud-free Sentinel-2 scene                 | Completed |
-
+| Method 6 | Expanded Sentinel-2 Features + Canopy Height Model | Completed |
 ---
 
 # Method 1 — Sentinel-2 Baseline Models
@@ -383,3 +383,171 @@ Using a single cloud-free Sentinel-2 image slightly improved Random Forest perfo
 | Combined Hyperspectral     | XGBoost           |     0.184 |
 | Single-Scene Sentinel HARV | Random Forest     |     0.223 |
 | Single-Scene Sentinel BART | Random Forest     |     0.107 |
+
+
+# Method 6 — Expanded Sentinel-2 Features + Canopy Height Model
+
+## Objective
+
+Improve Sentinel-2 ECM prediction by expanding the feature space while controlling multicollinearity.
+
+Changes from previous Sentinel-2 baseline:
+
+- Added back spectral standard deviation features.
+- Added additional GLCM texture features.
+- Removed highly correlated predictors (>0.70 correlation threshold).
+- Added canopy height features:
+  - canopy_height_mean
+  - canopy_height_stdDev
+
+Models evaluated:
+
+- Linear Regression (LR)
+- Random Forest (RF)
+- Tuned Random Forest (RF tuned)
+- XGBoost (XGB)
+- Tuned XGBoost (XGB tuned)
+- Support Vector Regression (SVR)
+- HistGradient Boosting (HGB)
+
+Cross-validation was performed using 5-fold K-fold CV.
+
+---
+
+# A. Expanded Features Without Canopy Height
+
+## HARV → HARV
+
+Feature set:
+- 22 uncorrelated Sentinel-2 features
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -0.265 | 17.67 | -32579.24 |
+| Random Forest | 0.194 | 15.38 | -0.032 |
+| Tuned Random Forest | 0.179 | 15.18 | 0.026 |
+| XGBoost | 0.082 | 18.21 | -0.087 |
+| Tuned XGBoost | **0.275** | **14.80** | **0.103** |
+| SVR | -0.009 | 14.35 | - |
+| HistGradient Boosting | 0.120 | 15.76 | - |
+
+### Summary
+
+Adding back standard deviation and texture features improved XGBoost performance compared to the previous Sentinel-2 baseline.
+
+- XGBoost improved from negative/low R² values to R² = 0.275.
+- Random Forest remained similar to previous experiments.
+- Linear Regression remained unstable due to high dimensionality relative to sample size.
+
+---
+
+## BART → BART
+
+Feature set:
+- 21 uncorrelated Sentinel-2 features
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -1.280 | 25.47 | -9.663 |
+| Random Forest | 0.189 | 15.06 | -0.192 |
+| Tuned Random Forest | 0.179 | 15.03 | -0.012 |
+| XGBoost | **0.271** | **14.44** | -0.190 |
+| Tuned XGBoost | 0.116 | 15.66 | -0.038 |
+| SVR | -0.149 | 16.68 | - |
+| HistGradient Boosting | 0.096 | 15.95 | - |
+
+### Summary
+
+BART models showed similar performance to previous Sentinel-2 experiments.
+
+- XGBoost achieved the highest test R² (0.271).
+- Cross-validation remained unstable, indicating limited generalization with the small sample size.
+
+---
+
+# B. Expanded Features Including Canopy Height
+
+## HARV → HARV
+
+Feature set:
+- 25 uncorrelated features
+- Added:
+  - canopy_height_mean
+  - canopy_height_stdDev
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -3.306 | 36.68 | -13.594 |
+| Random Forest | 0.207 | 14.28 | -0.037 |
+| Tuned Random Forest | 0.208 | 14.73 | 0.017 |
+| XGBoost | 0.141 | 15.00 | -0.061 |
+| Tuned XGBoost | **0.350** | **12.76** | 0.033 |
+| SVR | -0.009 | 14.35 | - |
+| HistGradient Boosting | 0.120 | 15.76 | - |
+
+### Summary
+
+Adding canopy height improved HARV prediction performance.
+
+Key improvements:
+
+- Tuned XGBoost increased from:
+  - R² = 0.275 → **0.350**
+  - MAE = 14.80 → **12.76**
+
+This suggests canopy structure provides additional ecological information not captured by Sentinel-2 spectral features alone.
+
+---
+
+## BART → BART
+
+Feature set:
+- 23 uncorrelated features
+- Added:
+  - canopy_height_mean
+  - canopy_height_stdDev
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -1.538 | 27.16 | -42.209 |
+| Random Forest | 0.201 | 14.77 | -0.178 |
+| Tuned Random Forest | 0.139 | 14.84 | -0.032 |
+| XGBoost | **0.433** | **12.43** | -0.223 |
+| Tuned XGBoost | 0.305 | 13.88 | -0.062 |
+| SVR | -0.149 | 16.68 | - |
+| HistGradient Boosting | 0.195 | 14.61 | - |
+
+### Summary
+
+Canopy height substantially improved BART XGBoost performance.
+
+Compared with the expanded Sentinel-2-only model:
+
+- XGBoost improved:
+  - R² = 0.271 → **0.433**
+  - MAE = 14.44 → **12.43**
+
+This indicates forest structural information may be important for predicting ECM composition.
+
+---
+
+# Method 6 Overall Summary
+
+| Dataset | Best Model | Best Test R² | MAE |
+|---|---|---:|---:|
+| HARV → HARV (expanded Sentinel-2) | Tuned XGBoost | 0.275 | 14.80 |
+| HARV → HARV (+ canopy height) | Tuned XGBoost | **0.350** | **12.76** |
+| BART → BART (expanded Sentinel-2) | XGBoost | 0.271 | 14.44 |
+| BART → BART (+ canopy height) | XGBoost | **0.433** | **12.43** |
+
+---
+
+# Interpretation
+
+Adding canopy height improved within-site ECM prediction, particularly for XGBoost models.
+
+The improvement suggests that structural forest characteristics provide complementary information to Sentinel-2 spectral measurements.
+
+However, cross-validation scores remained variable due to the limited number of field plots (~35–40 samples), indicating that model generalization remains challenging.
+
+Future work should investigate additional ecological predictors such as LiDAR-derived canopy structure and hyperspectral measurements.
