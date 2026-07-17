@@ -218,11 +218,11 @@ Increase the number of individual trees contributing to each plot.
 
 ---
 
-# A. Hyperspectral Models
+## A. Hyperspectral Models
 
-## Updated HARV Dataset
+### Updated HARV Dataset
 
-### With Nov–Dec Filter
+#### With Nov–Dec Filter
 
 | Model             |        R² |       MAE |
 | ----------------- | --------: | --------: |
@@ -232,7 +232,7 @@ Increase the number of individual trees contributing to each plot.
 
 ---
 
-### Without Nov–Dec Filter
+#### Without Nov–Dec Filter
 
 | Model             |        R² |   MAE |
 | ----------------- | --------: | ----: |
@@ -242,9 +242,9 @@ Increase the number of individual trees contributing to each plot.
 
 ---
 
-## Updated BART Dataset
+### Updated BART Dataset
 
-### With Nov–Dec Filter
+#### With Nov–Dec Filter
 
 | Model             |        R² |      MAE |
 | ----------------- | --------: | -------: |
@@ -254,17 +254,17 @@ Increase the number of individual trees contributing to each plot.
 
 ---
 
-### Without Nov–Dec Filter
+#### Without Nov–Dec Filter
 
 Results are identical because BART contains no observations after October.
 
 ---
 
-# B. Sentinel-2 Models
+## B. Sentinel-2 Models
 
-## Updated HARV Dataset
+### Updated HARV Dataset
 
-### With Nov–Dec Filter
+#### With Nov–Dec Filter
 
 | Model             |        R² |       MAE |
 | ----------------- | --------: | --------: |
@@ -274,7 +274,7 @@ Results are identical because BART contains no observations after October.
 
 ---
 
-### Without Nov–Dec Filter
+#### Without Nov–Dec Filter
 
 | Model             |        R² |       MAE |
 | ----------------- | --------: | --------: |
@@ -284,9 +284,9 @@ Results are identical because BART contains no observations after October.
 
 ---
 
-## Updated BART Dataset
+### Updated BART Dataset
 
-### With Nov–Dec Filter
+#### With Nov–Dec Filter
 
 | Model             |     R² |       MAE |
 | ----------------- | -----: | --------: |
@@ -296,13 +296,13 @@ Results are identical because BART contains no observations after October.
 
 ---
 
-### Without Nov–Dec Filter
+#### Without Nov–Dec Filter
 
 Results are identical because BART contains no November or December observations.
 
 ---
 
-## Summary
+### Summary
 
 Increasing the number of field observations did not consistently improve prediction accuracy.
 
