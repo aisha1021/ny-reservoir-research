@@ -26,6 +26,10 @@ Model performance is evaluated using:
 | Method 4 | Expand field datasets (2015–2023)                  | Completed |
 | Method 5 | Single cloud-free Sentinel-2 scene                 | Completed |
 | Method 6 | Expanded Sentinel-2 Features + Canopy Height Model | Completed |
+| Method 7 | Hyperspectral Feature Selection                    | Completed |
+| Method 8 | Hyperspectral Principal Component Analysis (PCA)   | Completed |
+| Method 9 | Sentinel-2 + NEON Canopy Height Model              | Completed |
+| Method 10 | Combined HARV + BART with Sentinel-2 + NEON CHM    | Completed |
 ---
 
 # Method 1 — Sentinel-2 Baseline Models
@@ -540,4 +544,242 @@ The improvement suggests that structural forest characteristics provide compleme
 
 However, cross-validation scores remained variable due to the limited number of field plots (~35–40 samples), indicating that model generalization remains challenging.
 
-Future work should investigate additional ecological predictors such as LiDAR-derived canopy structure and hyperspectral measurements.
+---
+
+# Method 7 — Hyperspectral Feature Selection
+
+## Objective
+
+Evaluate whether removing redundant hyperspectral predictors improves ECM prediction.
+
+### Feature Selection
+
+* Removed zero-variance features
+* Removed highly correlated features (|r| > 0.70)
+* Added back standard deviation features
+* Included canopy height statistics
+
+---
+
+## Feature Reduction
+
+| Dataset | Original Features | After Variance Filter | After Correlation Filter |
+| ------- | ----------------: | --------------------: | -----------------------: |
+| HARV    |               854 |                   796 |                       10 |
+| BART    |               854 |                   798 |                        6 |
+
+---
+
+## HARV → HARV
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    -1.806 |     27.81 |     -4.611 |
+| Random Forest       |    -0.293 |     18.09 |     -0.101 |
+| Tuned Random Forest |     0.008 |     15.40 |     -0.100 |
+| XGBoost             | **0.049** | **13.60** |     -0.729 |
+| Tuned XGBoost       |    -0.058 |     15.98 |     -0.100 |
+| SVR                 |    -0.173 |     16.99 |          — |
+| HistGradientBoost   |    -0.239 |     19.53 |          — |
+
+### Summary
+
+Although dimensionality was reduced from **854 to 10 predictors**, all models exhibited poor cross-validation performance. This indicates that aggressive correlation filtering discarded important spectral information.
+
+---
+
+## BART → BART
+
+| Model               | Test R² |   MAE | Mean CV R² |
+| ------------------- | ------: | ----: | ---------: |
+| Linear Regression   |  -1.046 | 20.82 |     -0.489 |
+| Random Forest       |  -0.876 | 21.10 |     -0.663 |
+| Tuned Random Forest |  -0.268 | 17.20 |     -0.064 |
+| XGBoost             |  -1.024 | 20.84 |     -1.204 |
+| Tuned XGBoost       |  -0.182 | 16.75 |     -0.067 |
+| SVR                 |  -0.292 | 17.11 |          — |
+| HistGradientBoost   |  -0.949 | 23.38 |          — |
+
+### Summary
+
+Feature selection substantially reduced predictive performance for BART, with all cross-validation scores remaining negative.
+
+---
+
+# Method 8 — Principal Component Analysis (PCA)
+
+## Objective
+
+Reduce hyperspectral dimensionality using Principal Component Analysis instead of correlation filtering.
+
+---
+
+## Feature Reduction
+
+| Dataset | Original Features | Principal Components |
+| ------- | ----------------: | -------------------: |
+| HARV    |               857 |                    6 |
+| BART    |               857 |                    5 |
+
+---
+
+## HARV → HARV
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    -0.974 |     22.99 |     -1.218 |
+| Random Forest       |     0.335 | **11.62** |     -0.264 |
+| Tuned Random Forest |     0.219 |     12.31 |     -0.025 |
+| XGBoost             |     0.348 |     12.94 |     -0.261 |
+| Tuned XGBoost       |     0.265 |     12.89 |  **0.048** |
+| SVR                 |     0.103 |     13.45 |          — |
+| HistGradientBoost   | **0.406** |     13.13 |          — |
+
+### Summary
+
+PCA preserved substantially more predictive information than correlation filtering while reducing the dataset from **857 features to only six principal components**.
+
+Compared to Method 7, nearly every model improved, demonstrating that PCA retains information from all spectral bands rather than discarding correlated variables.
+
+---
+
+## BART → BART
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    -0.651 |     18.02 |     -0.290 |
+| Random Forest       |     0.034 | **11.67** |     -0.033 |
+| Tuned Random Forest |    -0.062 |     13.23 |  **0.247** |
+| XGBoost             |     0.028 |     14.31 |     -0.156 |
+| Tuned XGBoost       | **0.097** |     13.18 |  **0.139** |
+| SVR                 |    -0.097 |     14.89 |          — |
+| HistGradientBoost   |     0.071 |     14.80 |          — |
+
+### Summary
+
+PCA consistently outperformed correlation filtering and produced the first positive cross-validation scores for tuned Random Forest and tuned XGBoost on BART.
+
+---
+
+# Method 9 — Sentinel-2 + NEON Canopy Height Model
+
+## Objective
+
+Evaluate whether replacing the global canopy height product with the higher-resolution NEON Canopy Height Model improves Sentinel-2 prediction.
+
+---
+
+## HARV → HARV
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |   -16.263 |     63.72 |    -15.532 |
+| Random Forest       |     0.050 |     15.92 |     -0.096 |
+| Tuned Random Forest |     0.130 |     15.51 |     -0.029 |
+| XGBoost             |     0.073 |     15.58 |     -0.139 |
+| Tuned XGBoost       | **0.395** | **12.87** |  **0.053** |
+| SVR                 |    -0.009 |     14.35 |          — |
+| HistGradientBoost   |    -0.002 |     16.45 |          — |
+
+### Summary
+
+Adding the NEON canopy height model produced the best Sentinel-2 result observed for HARV. Tuned XGBoost improved to **R² = 0.395**, while also yielding the first positive mean cross-validation score among the Sentinel-2 experiments.
+
+---
+
+## BART → BART
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    -3.582 |     33.66 |    -13.913 |
+| Random Forest       |     0.154 |     15.36 |     -0.170 |
+| Tuned Random Forest |     0.103 |     15.10 |     -0.014 |
+| XGBoost             | **0.326** | **14.72** |     -0.193 |
+| Tuned XGBoost       |    -0.037 |     15.44 |     -0.048 |
+| SVR                 |    -0.149 |     16.68 |          — |
+| HistGradientBoost   |    -0.190 |     16.97 |          — |
+
+### Summary
+
+The NEON canopy height model improved the test performance of XGBoost for BART, although cross-validation scores remained negative, indicating limited generalization due to the small dataset.
+
+---
+
+# Method 10 — Combined HARV + BART with Sentinel-2 + NEON CHM
+
+## Objective
+
+Determine whether canopy height improves prediction when training a single model using both HARV and BART.
+
+| Model             |    Test R² |       MAE |
+| ----------------- | ---------: | --------: |
+| Linear Regression |     -0.992 |     24.01 |
+| Random Forest     |     -0.329 |     20.50 |
+| XGBoost           |     -0.348 |     20.71 |
+| SVR               | **-0.060** | **17.73** |
+| HistGradientBoost |     -0.589 |     22.23 |
+
+### Summary
+
+Adding canopy height did not improve the combined-site model. While canopy structure enhanced within-site prediction, it did not overcome the ecological differences between HARV and BART that limit cross-site generalization.
+
+---
+
+# Final Best Results Summary
+
+| Method                                          | Dataset     | Best Model          |   Test R² |       MAE | Mean CV R² | Notes                                                         |
+| ----------------------------------------------- | ----------- | ------------------- | --------: | --------: | ---------: | ------------------------------------------------------------- |
+| **1. Sentinel-2 Baseline**                      | HARV → HARV | HistGradientBoost   |     0.316 | **14.62** |          — | Best baseline Sentinel-2 model                                |
+|                                                 | HARV → BART | Random Forest       |     0.219 | **15.79** |          — | Best cross-site performance                                   |
+|                                                 | BART → BART | CNN                 |     0.137 |     15.13 |          — | Highest R² (XGBoost had lower MAE = 14.37)                    |
+|                                                 | BART → HARV | Random Forest       |     0.188 | **15.72** |          — | Cross-site remained difficult                                 |
+| **2. Combined Sentinel-2**                      | HARV + BART | Random Forest       |    -0.366 |     19.81 |          — | Combining sites reduced performance                           |
+| **3. Original Hyperspectral**                   | HARV → HARV | **XGBoost**         | **0.658** | **10.06** |          — | Best overall model                                            |
+|                                                 | HARV → BART | Random Forest       |    -0.288 |     16.69 |          — | Poor transferability                                          |
+|                                                 | BART → BART | Linear Regression   | **0.699** |  **8.82** |          — | Highest within-site accuracy                                  |
+|                                                 | BART → HARV | Random Forest       |     0.170 | **14.62** |          — | Cross-site remained difficult                                 |
+|                                                 | HARV + BART | XGBoost             |     0.184 | **14.70** |          — | Best combined hyperspectral model                             |
+| **4. Expanded Field Dataset**                   | HARV → HARV | XGBoost             |     0.598 | **10.67** |          — | More field observations did not consistently improve accuracy |
+|                                                 | BART → BART | Linear Regression   | **0.691** |  **8.39** |          — | Similar to original results                                   |
+| **5. Single Cloud-Free Sentinel-2 Scene**       | HARV → HARV | Random Forest       |     0.223 | **14.39** |          — | Slight improvement over median composite                      |
+|                                                 | BART → BART | Random Forest       |     0.107 | **12.72** |          — | Minor improvement                                             |
+| **6. Expanded Sentinel-2 Features**             | HARV → HARV | Tuned XGBoost       |     0.275 |     14.80 |  **0.103** | Added standard deviations and texture features                |
+|                                                 | BART → BART | XGBoost             |     0.271 | **14.44** |     -0.190 | Best Sentinel-2-only BART model                               |
+| **6. Expanded Features + Global Canopy Height** | HARV → HARV | Tuned XGBoost       |     0.350 | **12.76** |  **0.033** | Canopy height improved HARV prediction                        |
+|                                                 | BART → BART | XGBoost             | **0.433** | **12.43** |     -0.223 | Largest Sentinel-2 improvement                                |
+| **7. Hyperspectral Feature Selection**          | HARV → HARV | XGBoost             |     0.049 | **13.60** |     -0.729 | Correlation filtering removed useful information              |
+|                                                 | BART → BART | Tuned Random Forest |    -0.268 | **17.20** |     -0.064 | Feature selection substantially reduced performance           |
+| **8. Hyperspectral PCA**                        | HARV → HARV | HistGradientBoost   | **0.406** |     13.13 |          — | PCA retained more information than feature selection          |
+|                                                 | BART → BART | Tuned XGBoost       |     0.097 |     13.18 |  **0.139** | First consistently positive CV scores                         |
+| **9. Sentinel-2 + NEON CHM**                    | HARV → HARV | Tuned XGBoost       | **0.395** | **12.87** |  **0.053** | Best Sentinel-2 model using NEON canopy structure             |
+|                                                 | BART → BART | XGBoost             |     0.326 | **14.72** |     -0.193 | Moderate improvement with NEON CHM                            |
+| **10. Combined Sentinel-2 + NEON CHM**          | HARV + BART | SVR                 |    -0.060 | **17.73** |          — | Canopy height did not improve combined-site prediction        |
+
+---
+
+# Overall Conclusions
+
+### Best Performing Models
+
+| Rank | Method                                     | Dataset     | Model             |   Test R² |
+| ---: | ------------------------------------------ | ----------- | ----------------- | --------: |
+| 🥇 1 | Original Hyperspectral                     | BART → BART | Linear Regression | **0.699** |
+| 🥈 2 | Original Hyperspectral                     | HARV → HARV | XGBoost           | **0.658** |
+| 🥉 3 | Expanded Field Dataset                     | HARV → HARV | XGBoost           | **0.598** |
+|    4 | Expanded Sentinel-2 + Global Canopy Height | BART → BART | XGBoost           | **0.433** |
+|    5 | Hyperspectral PCA                          | HARV → HARV | HistGradientBoost | **0.406** |
+|    6 | Sentinel-2 + NEON CHM                      | HARV → HARV | Tuned XGBoost     | **0.395** |
+|    7 | Expanded Sentinel-2 + Global Canopy Height | HARV → HARV | Tuned XGBoost     | **0.350** |
+|    8 | Single Cloud-Free Sentinel-2               | HARV → HARV | Random Forest     | **0.223** |
+
+---
+
+# Key Findings
+
+* **Hyperspectral imagery consistently outperformed Sentinel-2**, achieving the highest prediction accuracy across nearly all experiments.
+* **Aggressive correlation-based feature selection** substantially reduced model performance, indicating that many correlated hyperspectral bands still contain useful ecological information.
+* **Principal Component Analysis (PCA)** was a more effective dimensionality reduction technique than feature selection, preserving predictive information while reducing the feature space from **857 bands to only 5–6 principal components**.
+* **Canopy height metrics** improved within-site Sentinel-2 models, particularly for XGBoost, demonstrating that forest structural information complements spectral information.
+* **Cross-site prediction (HARV ↔ BART)** remained consistently poor across all experiments, suggesting strong ecological and spectral differences between the two forests.
+* **Cross-validation scores** were generally much lower than test-set R² values, reflecting the limited sample size (35–41 plots per site) and indicating that model generalization remains a primary challenge.
+
