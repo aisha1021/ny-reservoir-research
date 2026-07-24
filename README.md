@@ -30,6 +30,8 @@ Model performance is evaluated using:
 | Method 8 | Hyperspectral Principal Component Analysis (PCA)   | Completed |
 | Method 9 | Sentinel-2 + NEON Canopy Height Model              | Completed |
 | Method 10 | Combined HARV + BART with Sentinel-2 + NEON CHM    | Completed |
+| Method 11 | Tuned Principal Component Analysis (PCA)          | Completed |
+
 ---
 
 # Method 1 — Sentinel-2 Baseline Models
@@ -779,7 +781,125 @@ Adding canopy height did not improve the combined-site model. While canopy struc
 * **Hyperspectral imagery consistently outperformed Sentinel-2**, achieving the highest prediction accuracy across nearly all experiments.
 * **Aggressive correlation-based feature selection** substantially reduced model performance, indicating that many correlated hyperspectral bands still contain useful ecological information.
 * **Principal Component Analysis (PCA)** was a more effective dimensionality reduction technique than feature selection, preserving predictive information while reducing the feature space from **857 bands to only 5–6 principal components**.
+
+
 * **Canopy height metrics** improved within-site Sentinel-2 models, particularly for XGBoost, demonstrating that forest structural information complements spectral information.
 * **Cross-site prediction (HARV ↔ BART)** remained consistently poor across all experiments, suggesting strong ecological and spectral differences between the two forests.
 * **Cross-validation scores** were generally much lower than test-set R² values, reflecting the limited sample size (35–41 plots per site) and indicating that model generalization remains a primary challenge.
 
+
+---
+
+# Method 11 — Tuned Principal Component Analysis (PCA)
+
+## Objective
+
+Evaluate whether selecting the number of principal components through hyperparameter optimization improves hyperspectral ECM prediction compared to using a fixed explained-variance threshold.
+
+Rather than retaining enough principal components to explain approximately **95% of the variance**, the number of principal components was treated as a hyperparameter and optimized jointly with the machine learning model using **RandomizedSearchCV**.
+
+### Hyperparameter Optimization
+
+* StandardScaler
+* PCA (`n_components = 2–22`)
+* 5-fold K-Fold cross-validation
+* RandomizedSearchCV
+
+---
+
+## HARV → HARV
+
+| Model               | Best PCA Components |   Test R² |       MAE | Mean CV R² |
+| ------------------- | ------------------: | --------: | --------: | ---------: |
+| Tuned Random Forest |               **3** | **0.231** | **13.07** |     -0.004 |
+| Tuned XGBoost       |               **3** |     0.053 |     16.51 |  **0.205** |
+
+### Best Hyperparameters
+
+#### Random Forest
+
+```text
+n_components = 3
+n_estimators = 800
+max_depth = 5
+min_samples_split = 2
+min_samples_leaf = 4
+max_features = log2
+bootstrap = True
+```
+
+#### XGBoost
+
+```text
+n_components = 3
+n_estimators = 800
+learning_rate = 0.05
+max_depth = 4
+min_child_weight = 5
+subsample = 0.7
+colsample_bytree = 1.0
+reg_alpha = 1
+reg_lambda = 1
+```
+
+### Summary
+
+* Both models selected only **3 principal components**, substantially fewer than the six components retained using the 95% explained variance criterion.
+* Random Forest achieved moderate improvement over feature selection but did not outperform the original PCA experiment.
+* XGBoost produced the highest mean cross-validation score observed among the hyperspectral PCA experiments (**CV R² = 0.205**), although test performance remained modest.
+
+---
+
+## BART → BART
+
+| Model               | Best PCA Components |   Test R² |       MAE | Mean CV R² |
+| ------------------- | ------------------: | --------: | --------: | ---------: |
+| Tuned Random Forest |              **20** | **0.132** | **11.65** |      0.091 |
+| Tuned XGBoost       |              **22** |    -0.034 |     15.07 |  **0.111** |
+
+### Best Hyperparameters
+
+#### Random Forest
+
+```text
+n_components = 20
+n_estimators = 800
+max_depth = 5
+min_samples_split = 5
+min_samples_leaf = 1
+max_features = None
+bootstrap = True
+```
+
+#### XGBoost
+
+```text
+n_components = 22
+n_estimators = 300
+learning_rate = 0.01
+max_depth = 3
+min_child_weight = 1
+subsample = 1.0
+colsample_bytree = 0.5
+reg_alpha = 1
+reg_lambda = 10
+```
+
+### Summary
+
+* Unlike HARV, BART selected substantially more principal components (20–22).
+* Random Forest slightly improved over the original PCA experiment.
+* XGBoost achieved positive cross-validation performance but did not improve held-out test accuracy.
+
+---
+
+# Overall Findings
+
+Selecting the number of principal components through model optimization produced different optimal dimensionalities for the two study sites.
+
+* **HARV:** only **3 principal components** were sufficient for the best-performing models.
+* **BART:** the optimized models retained **20–22 principal components**, indicating that a larger portion of the hyperspectral information contributed to prediction.
+
+Compared with selecting principal components using the **95% explained variance** criterion, hyperparameter tuning did **not consistently improve test-set performance**. However, it demonstrated that the number of retained principal components should be treated as a predictive modeling hyperparameter rather than being determined solely by explained variance.
+
+---
