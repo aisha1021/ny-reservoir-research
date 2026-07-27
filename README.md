@@ -663,7 +663,7 @@ PCA consistently outperformed correlation filtering and produced the first posit
 
 ---
 
-# Method 9 — Sentinel-2 + NEON Canopy Height Model
+# Method 9 — Sentinel-2 & Hyperspectral + NEON Canopy Height Model
 
 ## Objective
 
@@ -671,7 +671,7 @@ Evaluate whether replacing the global canopy height product with the higher-reso
 
 ---
 
-## HARV → HARV
+## HARV → HARV (Sentinel-2)
 
 | Model               |   Test R² |       MAE | Mean CV R² |
 | ------------------- | --------: | --------: | ---------: |
@@ -683,13 +683,36 @@ Evaluate whether replacing the global canopy height product with the higher-reso
 | SVR                 |    -0.009 |     14.35 |          — |
 | HistGradientBoost   |    -0.002 |     16.45 |          — |
 
+## HARV → HARV (Hyperspectral with mean & neon chm)
+
+| Model             |        R² |       MAE | CV Mean R² |
+| ----------------- | --------: | --------: | ---------: |
+| Linear Regression |    -1.488 |     30.46 |     -0.619 |
+| Random Forest     |     0.436 |     11.57 |     -0.175 |
+| Tuned Random Forest |     0.039 |     14.84 |     -0.003 |
+| XGBoost           | **0.679** | **9.32** | **-0.216** |
+| Tuned XGBoost     | 0.376 | 12.38 | -0.021 |
+| HistGradientBoost     |     0.336 |     13.60 |     --- |
+
+
+## HARV → HARV (Hyperspectral with mean + std & neon chm)
+
+| Model             |        R² |       MAE | CV Mean R² |
+| ----------------- | --------: | --------: | ---------: |
+| Linear Regression |    0.086 |     15.50 |     -0.920 |
+| Random Forest     |     0.395 |     11.76 |     -0.244 |
+| Tuned Random Forest |     0.059 |     14.13 |     -0.004 |
+| XGBoost           | **0.617** | **10.08** | **-0.261** |
+| Tuned XGBoost     | 0.326 | 12.64 | -0.061 |
+| HistGradientBoost     |    0.927 |     4.347 |  -1.224 |
+
 ### Summary
 
 Adding the NEON canopy height model produced the best Sentinel-2 result observed for HARV. Tuned XGBoost improved to **R² = 0.395**, while also yielding the first positive mean cross-validation score among the Sentinel-2 experiments.
 
 ---
 
-## BART → BART
+## BART → BART (Sentinel-2)
 
 | Model               |   Test R² |       MAE | Mean CV R² |
 | ------------------- | --------: | --------: | ---------: |
@@ -700,6 +723,27 @@ Adding the NEON canopy height model produced the best Sentinel-2 result observed
 | Tuned XGBoost       |    -0.037 |     15.44 |     -0.048 |
 | SVR                 |    -0.149 |     16.68 |          — |
 | HistGradientBoost   |    -0.190 |     16.97 |          — |
+
+## BART → BART (Hyperspectral with mean & neon chm)
+
+| Model             |        R² |       MAE | CV Mean R² |
+| ----------------- | --------: | --------: | ---------: |
+| Linear Regression |    **0.693** |     **8.396** |     **0.580** |
+| Random Forest     |     0.252 |     13.72 |     0.018 |
+| Tuned Random Forest |     0.207 |     14.09 |     0.018 |
+| XGBoost           | 0.319 | 13.00 | -0.103 |
+| Tuned XGBoost     | 0.163 | 14.75 | 0.126 |
+
+
+## BART → BART (Hyperspectral with mean + std & neon chm)
+
+| Model             |        R² |       MAE | CV Mean R² |
+| ----------------- | --------: | --------: | ---------: |
+| Linear Regression |    **-0.002** |     ***15.27** |     **0.307** |
+| Random Forest     |     -0.130 |     13.72 |     -0.124 |
+| Tuned Random Forest |     -0.041 |     13.17 |     0.068 |
+| XGBoost           | -0.053 | 12.71 | -0.064 |
+| Tuned XGBoost     | -0.017 | 12.89 | 0.258 |
 
 ### Summary
 
