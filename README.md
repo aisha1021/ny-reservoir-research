@@ -1,4 +1,4 @@
-# Predicting Ectomycorrhizal (ECM) Percentage Using Remote Sensing and Machine Learning
+# Predicting Mycorrhizal Tree Composition Using Sentinel-2 and Hyperspectral Remote Sensing Across Two NEON Forest Sites
 
 ## Project Objective
 
