@@ -28,7 +28,7 @@ Model performance is evaluated using:
 | Method 6 | Expanded Sentinel-2 Features + Canopy Height Model | Completed |
 | Method 7 | Hyperspectral Feature Selection                    | Completed |
 | Method 8 | Hyperspectral Principal Component Analysis (PCA)   | Completed |
-| Method 9 | Sentinel-2 + NEON Canopy Height Model              | Completed |
+| Method 9 | Sentinel-2 & Hyperspectral + NEON Canopy Height Model              | Completed |
 | Method 10 | Combined HARV + BART with Sentinel-2 + NEON CHM    | Completed |
 | Method 11 | Tuned Principal Component Analysis (PCA)          | Completed |
 
@@ -947,3 +947,14 @@ Selecting the number of principal components through model optimization produced
 Compared with selecting principal components using the **95% explained variance** criterion, hyperparameter tuning did **not consistently improve test-set performance**. However, it demonstrated that the number of retained principal components should be treated as a predictive modeling hyperparameter rather than being determined solely by explained variance.
 
 ---
+
+## Best Methods So Far
+
+| Data Source | Dataset / Features | Best Model | Test R² | MAE | CV Mean R² |
+|-------------|--------------------|------------|--------:|----:|-----------:|
+| **Hyperspectral** | HARV + mean + NEON CHM | XGBoost | **0.679** | **9.32** | **-0.216** |
+| **Hyperspectral** | BART + mean + NEON CHM | Linear Regression | **0.693** | **8.396** | **0.580** |
+| **Sentinel-2** | HARV + mean & std + NEON CHM | Tuned XGBoost | **0.395** | **12.87** | **0.053** |
+| **Sentinel-2** | HARV + mean & std + Global CHM | Tuned XGBoost | **0.350** | **12.76** | **0.033** |
+| **Sentinel-2** | BART + mean & std + Global CHM (uncorrelated features) | XGBoost | **0.433** | **12.43** | **-0.223** |
+| **Sentinel-2** | BART + mean & std + NEON CHM (uncorrelated features) | XGBoost | **0.326** | **14.72** | **-0.193** |
