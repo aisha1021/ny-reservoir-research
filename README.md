@@ -692,7 +692,7 @@ Evaluate whether replacing the global canopy height product with the higher-reso
 | Tuned Random Forest |     0.039 |     14.84 |     -0.003 |
 | XGBoost           | **0.679** | **9.32** | **-0.216** |
 | Tuned XGBoost     | 0.376 | 12.38 | -0.021 |
-| HistGradientBoost     |     0.336 |     13.60 |     --- |
+| HistGradientBoost  | 0.336 |     13.60 |  -0.978 |
 
 
 ## HARV → HARV (Hyperspectral with mean + std & neon chm)
