@@ -463,7 +463,7 @@ BART models showed similar performance to previous Sentinel-2 experiments.
 
 ## B. Expanded Features Including Canopy Height
 
-### HARV → HARV
+### HARV → HARV (field observations filtered for month 6-7)
 
 Feature set:
 - 25 uncorrelated features
@@ -481,6 +481,18 @@ Feature set:
 | SVR | -0.009 | 14.35 | - |
 | HistGradient Boosting | 0.120 | 15.76 | - |
 
+### HARV → HARV (field observations filtered for month 5-8)
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -3.556 | 37.56 | -8.309 |
+| Random Forest | 0.215 | 14.30 | -0.023 |
+| Tuned Random Forest | 0.186 | 15.06 | 0.004 |
+| XGBoost | 0.069 | 15.60 | -0.061 |
+| Tuned XGBoost | **0.200** | **14.24** | 0.038 |
+| SVR | -0.008 | 14.33 | -0.147 |
+| HistGradient Boosting | 0.070 | 15.464 | -0.938 |
+
 #### Summary
 
 Adding canopy height improved HARV prediction performance.
@@ -495,7 +507,7 @@ This suggests canopy structure provides additional ecological information not ca
 
 ---
 
-### BART → BART
+### BART → BART (field observations filtered for month 6-7)
 
 Feature set:
 - 23 uncorrelated features
@@ -505,13 +517,25 @@ Feature set:
 
 | Model | Test R² | Test MAE | CV Mean R² |
 |---|---:|---:|---:|
-| Linear Regression | -1.538 | 27.16 | -42.209 |
-| Random Forest | 0.201 | 14.77 | -0.178 |
-| Tuned Random Forest | 0.139 | 14.84 | -0.032 |
-| XGBoost | **0.433** | **12.43** | -0.223 |
+| Linear Regression | -1.538 | 27.16 | -1.809 |
+| Random Forest | 0.201 | 14.77 | -0.183 |
+| Tuned Random Forest | 0.139 | 14.84 | -0.031 |
+| XGBoost | **0.433** | **12.43** | -0.245 |
 | Tuned XGBoost | 0.305 | 13.88 | -0.062 |
-| SVR | -0.149 | 16.68 | - |
-| HistGradient Boosting | 0.195 | 14.61 | - |
+| SVR | -0.149 | 16.68 | -0.082 |
+| HistGradient Boosting | 0.195 | 14.61 | -0.560 |
+
+### BART → BART (field observations filtered for month 5-8)
+
+| Model | Test R² | Test MAE | CV Mean R² |
+|---|---:|---:|---:|
+| Linear Regression | -1.382 | 26.23 | -1.805 |
+| Random Forest | 0.214 | 14.54 | -0.191 |
+| Tuned Random Forest | 0.156 | 14.63 | -0.033 |
+| XGBoost | **0.428** | **13.07** | -0.205 |
+| Tuned XGBoost | -0.098 | 16.03 | -0.069 |
+| SVR | -0.172 | 16.98 | -0.086 |
+| HistGradient Boosting | 0.204 | 14.44 | -0.59 |
 
 #### Summary
 
@@ -671,7 +695,7 @@ Evaluate whether replacing the global canopy height product with the higher-reso
 
 ---
 
-## HARV → HARV (Sentinel-2)
+## HARV → HARV (Sentinel-2 (field observations filtered for month 6-7) with mean & std)
 
 | Model               |   Test R² |       MAE | Mean CV R² |
 | ------------------- | --------: | --------: | ---------: |
@@ -682,6 +706,46 @@ Evaluate whether replacing the global canopy height product with the higher-reso
 | Tuned XGBoost       | **0.395** | **12.87** |  **0.053** |
 | SVR                 |    -0.009 |     14.35 |          — |
 | HistGradientBoost   |    -0.002 |     16.45 |          — |
+
+
+## HARV → HARV (Sentinel-2 (field observations filtered for month 5-8) with mean & std and uncorrelated features and texture features)
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |   -0.326 |     18.17 |    -3.747 |
+| Random Forest       |     0.188 |     14.35 |     -0.045 |
+| Tuned Random Forest |     0.181 |     14.42 |      0.125 |
+| XGBoost             |     0.076 |     15.17 |     -0.215 |
+| Tuned XGBoost       | **0.296** | **14.32** |  **0.116** |
+| SVR                 |     0.123 |     14.33 |     -0.147 |
+| HistGradientBoost   |     0.015 |     15.83 |     -0.530 |
+
+
+## HARV → HARV (Sentinel-2 (field observations filtered for month 5-8) with mean & std and neon chm and uncorrelated features)
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    0.103 |     14.62 |    -0.983 |
+| Random Forest       |     -0.345 |     19.61 |     -0.306 |
+| Tuned Random Forest |     -0.179 |     19.10 |      0.012 |
+| XGBoost             |     0.053 |     16.51 |     -0.607 |
+| Tuned XGBoost       | **0.243** | **0.243** |  **0.156** |
+| SVR                 |    -0.009 |     14.33 |     -0.147 |
+| HistGradientBoost   |     -0.498 |     20.38 |     -1.100 |
+
+
+## HARV → HARV (Sentinel-2 (field observations filtered for month 5-8) with mean & std and neon chm and uncorrelated features and texture features)
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |   -16.712 |     64.64 |    -16.011 |
+| Random Forest       |     0.061 |     15.75 |     -0.091 |
+| Tuned Random Forest |     0.181 |     14.42 |      0.125 |
+| XGBoost             |     0.078 |     15.85 |     -0.142 |
+| Tuned XGBoost       | **0.463** | **12.40** |  **0.077** |
+| SVR                 |    -0.008 |     14.33 |     -0.147 |
+| HistGradientBoost   |     0.015 |     16.20 |     -0.570 |
+
 
 ## HARV → HARV (Hyperspectral with mean & neon chm)
 
@@ -712,17 +776,29 @@ Adding the NEON canopy height model produced the best Sentinel-2 result observed
 
 ---
 
-## BART → BART (Sentinel-2)
+## BART → BART (Sentinel-2 (field observations filtered for month 6-7) with mean & std and neon chm and uncorrelated features and texture features)
 
 | Model               |   Test R² |       MAE | Mean CV R² |
 | ------------------- | --------: | --------: | ---------: |
-| Linear Regression   |    -3.582 |     33.66 |    -13.913 |
+| Linear Regression   |    -3.582 |     33.66 |     -2.936 |
 | Random Forest       |     0.154 |     15.36 |     -0.170 |
 | Tuned Random Forest |     0.103 |     15.10 |     -0.014 |
 | XGBoost             | **0.326** | **14.72** |     -0.193 |
 | Tuned XGBoost       |    -0.037 |     15.44 |     -0.048 |
 | SVR                 |    -0.149 |     16.68 |          — |
 | HistGradientBoost   |    -0.190 |     16.97 |          — |
+
+## BART → BART (Sentinel-2 (field observations filtered for month 5-8) with mean & std and neon chm and uncorrelated features and texture features)
+
+| Model               |   Test R² |       MAE | Mean CV R² |
+| ------------------- | --------: | --------: | ---------: |
+| Linear Regression   |    -3.357 |     32.63 |     -2.893 |
+| Random Forest       |     0.167 |     15.21 |     -0.228 |
+| Tuned Random Forest |     0.132 |     14.86 |     -0.015 |
+| XGBoost             | **0.343** | **14.73** |     -0.211 |
+| Tuned XGBoost       |    -0.031 |     15.34 |     -0.050 |
+| SVR                 |    -0.172 |     16.98 |     -0.086 |
+| HistGradientBoost   |    -0.192 |     16.62 |     -0.795 |
 
 ## BART → BART (Hyperspectral with mean & neon chm)
 
@@ -954,7 +1030,7 @@ Compared with selecting principal components using the **95% explained variance*
 |-------------|--------------------|------------|--------:|----:|-----------:|
 | **Hyperspectral** | HARV + mean + NEON CHM | XGBoost | **0.679** | **9.32** | **-0.216** |
 | **Hyperspectral** | BART + mean + NEON CHM | Linear Regression | **0.693** | **8.396** | **0.580** |
-| **Sentinel-2** | HARV + mean & std + NEON CHM | Tuned XGBoost | **0.395** | **12.87** | **0.053** |
-| **Sentinel-2** | HARV + mean & std + Global CHM | Tuned XGBoost | **0.350** | **12.76** | **0.033** |
-| **Sentinel-2** | BART + mean & std + Global CHM (uncorrelated features) | XGBoost | **0.433** | **12.43** | **-0.223** |
-| **Sentinel-2** | BART + mean & std + NEON CHM (uncorrelated features) | XGBoost | **0.326** | **14.72** | **-0.193** |
+| **Sentinel-2** | HARV + mean & std + NEON CHM (uncorrelated features + field obs. filtered months 5-8)| Tuned XGBoost | **0.463** | **12.40** |  **0.077** |
+| **Sentinel-2** | HARV + mean & std + Global CHM (uncorrelated features + field obs. filtered months 6-7) | Tuned XGBoost | **0.350** | **12.76** | **0.033** |
+| **Sentinel-2** | BART + mean & std + Global CHM (uncorrelated features + field obs. filtered months 6-7) | XGBoost | **0.433** | **12.43** | **-0.223** |
+| **Sentinel-2** | BART + mean & std + NEON CHM (uncorrelated features + field obs. filtered months 5-8) | XGBoost | **0.343** | **14.73** |     -0.211 |
